@@ -3,7 +3,7 @@ Version:        1.2
 Release:        1%{?dist}
 Summary:        Apache CAS Authentication Module for the JASIG/Apereo CAS Server
 
-License:        APLv2
+License:        Apache-2.0
 URL:            https://github.com/apereo/mod_auth_cas
 Source0:        https://github.com/apereo/%{name}/archive/v%{version}/%{name}-v%{version}.tar.gz
 Source1:        auth_cas_mod.conf
