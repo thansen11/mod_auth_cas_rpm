@@ -1,12 +1,12 @@
 Name:           mod_auth_cas
 Version:        1.2
 Release:        1%{?dist}
-Summary:        Apache 2.2/2.4 compliant module that supports the CASv1 and CASv2 protocols
+Summary:        Apache 2.4 compliant module that supports the CASv1 and CASv2 protocols
 
 Group:          System Environment/Daemons
 License:        APLv2
 URL:            https://github.com/apereo/mod_auth_cas
-Source0:        https://github.com/apereo/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/apereo/%{name}/archive/v%{version}/%{name}-v%{version}.tar.gz
 Source1:        auth_cas_mod.conf
 Source2:        auth_cas_httpd.conf
 
@@ -23,11 +23,11 @@ Requires:       httpd
 Requires:       mod_ssl
 
 %description
-mod_auth_cas is an Apache 2.2 and 2.4 compliant module that supports the CASv1
+mod_auth_cas is an Apache 2.4 compliant module that supports the CASv1
 and CASv2 protocols
 
 %prep
-%setup -q -n %{name}-1.2
+%setup -q -n %{name}-%{version}
 
 %build
 autoreconf -vif #BZ926155 - support aarch64
@@ -37,14 +37,6 @@ make %{?_smp_mflags}
 %install
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot} LIBEXECDIR=%{_httpd_moddir}
-echo "DEBUG: _httpd_modconfdir: %{_httpd_modconfdir}"
-echo "DEBUG: _httpd_confdir: %{_httpd_modconfdir}"
-%if "%{_httpd_modconfdir}" == "%{_httpd_confdir}"
-# httpd <= 2.2.x
-cat %{SOURCE1} %{SOURCE2} > auth_cas.conf
-install -Dp -m 644 auth_cas.conf %{buildroot}%{_httpd_modconfdir}/auth_cas.conf
-%else
-# httpd >= 2.4.x
 install -Dp -m 644 %{SOURCE1} %{buildroot}%{_httpd_modconfdir}/10-auth_cas.conf
 install -Dp -m 644 %{SOURCE2} %{buildroot}%{_httpd_confdir}/auth_cas.conf
 %endif
