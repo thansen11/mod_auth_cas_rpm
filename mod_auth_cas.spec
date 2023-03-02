@@ -39,7 +39,6 @@ rm -rf %{buildroot}
 make install DESTDIR=%{buildroot} LIBEXECDIR=%{_httpd_moddir}
 install -Dp -m 644 %{SOURCE1} %{buildroot}%{_httpd_modconfdir}/10-auth_cas.conf
 install -Dp -m 644 %{SOURCE2} %{buildroot}%{_httpd_confdir}/auth_cas.conf
-%endif
 
 mkdir -p %{buildroot}/var/cache/httpd/%{name}
 
