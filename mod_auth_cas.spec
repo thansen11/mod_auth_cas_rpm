@@ -1,7 +1,7 @@
 Name:           mod_auth_cas
 Version:        1.2
 Release:        1%{?dist}
-Summary:        Apache 2.4 compliant module that supports the CASv1 and CASv2 protocols
+Summary:        Apache CAS Authentication Module for the JASIG/Apereo CAS Server
 
 Group:          System Environment/Daemons
 License:        APLv2
@@ -23,8 +23,9 @@ Requires:       httpd
 Requires:       mod_ssl
 
 %description
-mod_auth_cas is an Apache 2.4 compliant module that supports the CASv1
-and CASv2 protocols
+The purpose of this module is to allow an Apache web server to interact
+with an authentication server that conforms to the CAS version 1 or 2
+protocol or SAML protocol as used by the JASIG/Apereo CAS Server
 
 %prep
 %setup -q -n %{name}-%{version}
