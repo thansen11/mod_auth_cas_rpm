@@ -14,9 +14,11 @@ BuildRequires:  httpd-devel
 BuildRequires:  m4, readline-devel, autoconf, automake
 BuildRequires:  libcurl-devel
 BuildRequires:  libtool
+# Created issue with upstream https://github.com/apereo/mod_auth_cas/issues/208
 BuildRequires:  pcre-devel
+BuildRequires:  gcc
 
-Requires:       httpd
+Requires:       httpd-mmn
 Requires:       mod_ssl
 
 %description
