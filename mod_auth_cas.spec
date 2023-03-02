@@ -3,14 +3,11 @@ Version:        1.2
 Release:        1%{?dist}
 Summary:        Apache CAS Authentication Module for the JASIG/Apereo CAS Server
 
-Group:          System Environment/Daemons
 License:        APLv2
 URL:            https://github.com/apereo/mod_auth_cas
 Source0:        https://github.com/apereo/%{name}/archive/v%{version}/%{name}-v%{version}.tar.gz
 Source1:        auth_cas_mod.conf
 Source2:        auth_cas_httpd.conf
-
-BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires:  openssl-devel
 BuildRequires:  httpd-devel
@@ -36,16 +33,11 @@ autoreconf -vif #BZ926155 - support aarch64
 make %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
 make install DESTDIR=%{buildroot} LIBEXECDIR=%{_httpd_moddir}
 install -Dp -m 644 %{SOURCE1} %{buildroot}%{_httpd_modconfdir}/10-auth_cas.conf
 install -Dp -m 644 %{SOURCE2} %{buildroot}%{_httpd_confdir}/auth_cas.conf
 
 mkdir -p %{buildroot}/var/cache/httpd/%{name}
-
-%clean
-rm -rf %{buildroot}
-
 
 %files
 %defattr(-,root,root,-)
