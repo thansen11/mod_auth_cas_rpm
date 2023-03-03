@@ -27,15 +27,15 @@ with an authentication server that conforms to the CAS version 1 or 2
 protocol or SAML protocol as used by the JASIG/Apereo CAS Server
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q
 
 %build
 autoreconf -vif #BZ926155 - support aarch64
 %configure --with-apxs=%{_httpd_apxs}
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} LIBEXECDIR=%{_httpd_moddir}
+%make_install
 install -Dp -m 644 %{SOURCE1} %{buildroot}%{_httpd_modconfdir}/10-auth_cas.conf
 install -Dp -m 644 %{SOURCE2} %{buildroot}%{_httpd_confdir}/auth_cas.conf
 
