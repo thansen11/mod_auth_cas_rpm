@@ -1,6 +1,6 @@
 Name:           mod_auth_cas
 Version:        1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Apache CAS Authentication Module for the JASIG/Apereo CAS Server
 
 License:        Apache-2.0
@@ -39,20 +39,21 @@ autoreconf -vif #BZ926155 - support aarch64
 install -Dp -m 644 %{SOURCE1} %{buildroot}%{_httpd_modconfdir}/10-auth_cas.conf
 install -Dp -m 644 %{SOURCE2} %{buildroot}%{_httpd_confdir}/auth_cas.conf
 
-mkdir -p %{buildroot}/var/cache/httpd/%{name}
+mkdir -p %{buildroot}%{_localstatedir}/cache/httpd/%{name}
 
 %files
-%defattr(-,root,root,-)
 %doc README
-%{_libdir}/httpd/modules/*.so
-%config(noreplace) %{_httpd_confdir}/*.conf
-%config(noreplace) %{_httpd_modconfdir}/*.conf
+%{_libdir}/httpd/modules/mod_auth_cas.so
+%config(noreplace) %{_httpd_confdir}/auth_cas.conf
+%config(noreplace) %{_httpd_modconfdir}/10-auth_cas.conf
 
-%defattr(-,apache,apache,-)
-%dir /var/cache/httpd/%{name}
+%dir %attr(-,apache,apache) %{_localstatedir}/cache/httpd/%{name}
 
 %changelog
-* Tue Mar 02 2021 Scott Williams <vwbusguy@fedoraproject.org> - 1.2-0
+* Tue Mar 07 2023 Tim Hansen <timhansen46@fedoraproject.org> - 1.2-2
+- spec file modernization
+
+* Tue Mar 02 2021 Scott Williams <vwbusguy@fedoraproject.org> - 1.2-1
 - Version bump to v1.2 and support for EL8
 
 * Fri Sep 02 2016 Adam Miller <maxamillion@fedoraproject.org> - 1.1-3
