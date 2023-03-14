@@ -1,6 +1,6 @@
 Name:           mod_auth_cas
 Version:        1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Apache CAS Authentication Module for the JASIG/Apereo CAS Server
 
 License:        Apache-2.0
@@ -8,6 +8,10 @@ URL:            https://github.com/apereo/mod_auth_cas
 Source0:        https://github.com/apereo/%{name}/archive/v%{version}/%{name}-v%{version}.tar.gz
 Source1:        auth_cas_mod.conf
 Source2:        auth_cas_httpd.conf
+# https://github.com/apereo/mod_auth_cas/pull/210
+Patch0:			0001-Patch-obsolete-autotools-m4-macro.patch
+# https://github.com/apereo/mod_auth_cas/pull/209
+Patch1:         0002-Update-to-pcre2.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  httpd-devel
@@ -18,7 +22,7 @@ BuildRequires:  libtool
 BuildRequires:  pcre-devel
 BuildRequires:  gcc
 
-Requires:       httpd-mmn
+Requires:       httpd-mmn = %{_httpd_mmn}
 Requires:       mod_ssl
 
 %description
@@ -50,6 +54,9 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/httpd/%{name}
 %dir %attr(-,apache,apache) %{_localstatedir}/cache/httpd/%{name}
 
 %changelog
+* Tue Mar 14 2023 Tim Hansen <timhansen46@fedoraproject.org> - 1.2-3
+- Add patches for pending upstream pull requests.
+
 * Tue Mar 07 2023 Tim Hansen <timhansen46@fedoraproject.org> - 1.2-2
 - spec file modernization
 
