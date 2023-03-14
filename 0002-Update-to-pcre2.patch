@@ -1,0 +1,320 @@
+From ba59ab9edb79d9da7f983fd341c9c1523641d65d Mon Sep 17 00:00:00 2001
+From: "Scott A. Williams" <vwfoxguru@gmail.com>
+Date: Fri, 3 Mar 2023 18:35:27 -0800
+Subject: [PATCH 1/3] Port pcre calls to pcre2.
+
+Signed-off-by: Scott A. Williams <vwfoxguru@gmail.com>
+---
+ README             |  2 +-
+ README.win32       |  2 +-
+ config.h.in        |  2 +-
+ configure          | 12 ++++++------
+ configure.ac       |  4 ++--
+ src/mod_auth_cas.c | 12 ++++++------
+ 6 files changed, 17 insertions(+), 17 deletions(-)
+
+diff --git a/README b/README
+index 5069de7..88f1a20 100644
+--- a/README
++++ b/README
+@@ -49,7 +49,7 @@ The following development libraries and utilities must be installed:
+ * Apache Portable Runtime Utilities - 1.2.7 or higher
+ * Apache Web Server - 2.2.3 or higher
+ * libcurl - 7.18.2 or higher
+-* libpcre - 7.8 or higher
++* libpcre2 - 10 or higher
+ 
+ Download the distribution via git or tarball.  Because git does not
+ preserve timestamps, autoconf may determine it is necessary to bootstrap
+diff --git a/README.win32 b/README.win32
+index f7d41df..ce40fd7 100644
+--- a/README.win32
++++ b/README.win32
+@@ -22,7 +22,7 @@ This has only been tested with:
+ NOTE:	As of mod_auth_cas 1.0.9, Win32 support has been dropped due
+ 	to lack of development resources and low community interest.
+ 	As a result, these instructions may be inaccurate.  As an
+-	explicit example, the additional curl and libpcre dependencies are
++	explicit example, the additional curl and libpcre2 dependencies are
+ 	not addressed in these instructions at all.
+ 
+ ====================================================================
+diff --git a/config.h.in b/config.h.in
+index 0ffabb5..26fbd2c 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -15,7 +15,7 @@
+ /* Define to 1 if you have a functional curl library. */
+ #undef HAVE_LIBCURL
+ 
+-/* Define to 1 if you have the `pcre' library (-lpcre). */
++/* Define to 1 if you have the `pcre2' library (-lpcre). */
+ #undef HAVE_LIBPCRE
+ 
+ /* Define to 1 if you have the `ssl' library (-lssl). */
+diff --git a/configure b/configure
+index a7931aa..3bfd765 100755
+--- a/configure
++++ b/configure
+@@ -14129,9 +14129,9 @@ _ACEOF
+   unset _libcurl_with
+ 
+ 
+-# Checks for libpcre
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre_compile in -lpcre" >&5
+-$as_echo_n "checking for pcre_compile in -lpcre... " >&6; }
++# Checks for libpcre2
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre2_compile in -lpcre" >&5
++$as_echo_n "checking for pcre2_compile in -lpcre... " >&6; }
+ if ${ac_cv_lib_pcre_pcre_compile+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+@@ -14146,11 +14146,11 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ #ifdef __cplusplus
+ extern "C"
+ #endif
+-char pcre_compile ();
++char pcre2_compile ();
+ int
+ main ()
+ {
+-return pcre_compile ();
++return pcre2_compile ();
+   ;
+   return 0;
+ }
+@@ -14174,7 +14174,7 @@ _ACEOF
+   LIBS="-lpcre $LIBS"
+ 
+ else
+-  as_fn_error $? "libpcre required" "$LINENO" 5
++  as_fn_error $? "libpcre2 required" "$LINENO" 5
+ fi
+ 
+ 
+diff --git a/configure.ac b/configure.ac
+index cd53219..f994f3b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -137,8 +137,8 @@ AC_CHECK_HEADERS([openssl/crypto.h openssl/x509.h openssl/pem.h openssl/ssl.h op
+ #### Check for libcurl
+ LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl development files required])])
+ 
+-# Checks for libpcre
+-AC_CHECK_LIB([pcre], [pcre_compile], [], [AC_MSG_ERROR([libpcre required])])
++# Checks for libpcre2
++AC_CHECK_LIB([pcre2], [pcre2_compile], [], [AC_MSG_ERROR([libpcre2 required])])
+ 
+ # Checks for header files.
+ AC_CHECK_HEADERS([netdb.h stddef.h sys/socket.h unistd.h])
+diff --git a/src/mod_auth_cas.c b/src/mod_auth_cas.c
+index 9228e80..bbec877 100644
+--- a/src/mod_auth_cas.c
++++ b/src/mod_auth_cas.c
+@@ -44,7 +44,7 @@
+ #include "util_md5.h"
+ #include "ap_config.h"
+ #include "ap_release.h"
+-#include "pcre.h"
++#include "pcre2.h"
+ #include "apr_buckets.h"
+ #include "apr_file_info.h"
+ #include "apr_lib.h"
+@@ -2382,13 +2382,13 @@ int cas_match_attribute(const char *const attr_spec, const cas_saml_attr *const
+ 			const cas_saml_attr_val *val;
+ 			const char *errorptr;
+ 			int erroffset;
+-			pcre *preg;
++			pcre2_code *preg;
+ 
+ 			/* Skip the tilde */
+ 			spec_c++;
+ 
+ 			/* Set up the regex */
+-			preg = pcre_compile(spec_c, 0, &errorptr, &erroffset, NULL);
++			preg = pcre2_compile(spec_c, 0, &errorptr, &erroffset, NULL);
+ 			if (NULL == preg) {
+ 				ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, "Pattern [%s] is not a valid regular expression", spec_c);
+ 				continue;
+@@ -2399,13 +2399,13 @@ int cas_match_attribute(const char *const attr_spec, const cas_saml_attr *const
+ 			for ( ; val; val = val->next) {
+ 				/* PCRE-compare the attribute value. At this point, spec_c
+ 				 * points to the NULL-terminated value pattern. */
+-				if (0 == pcre_exec(preg, NULL, val->value, (int)strlen(val->value), 0, 0, NULL, 0)) {
+-					pcre_free(preg);
++				if (0 == pcre2_match(preg, NULL, val->value, (int)strlen(val->value), 0, 0, NULL, 0)) {
++					pcre2_match_data_free(preg);
+ 					return CAS_ATTR_MATCH;
+ 				}
+ 			}
+ 
+-			pcre_free(preg);
++			pcre2_match_data__free(preg);
+ 		}
+ 	}
+ 	return CAS_ATTR_NO_MATCH;
+-- 
+2.39.2
+
+
+From 0f28901445b6103c1c0de669334c26ea381a4607 Mon Sep 17 00:00:00 2001
+From: "Scott A. Williams" <vwfoxguru@gmail.com>
+Date: Fri, 3 Mar 2023 19:46:30 -0800
+Subject: [PATCH 2/3] Adjust code and checks for PCRE2.
+
+Signed-off-by: Scott A. Williams <vwfoxguru@gmail.com>
+---
+ config.h.in        |  2 +-
+ configure          |  8 ++++----
+ configure.ac       |  2 +-
+ src/mod_auth_cas.c | 18 +++++++++++-------
+ 4 files changed, 17 insertions(+), 13 deletions(-)
+
+diff --git a/config.h.in b/config.h.in
+index 26fbd2c..03f523c 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -15,7 +15,7 @@
+ /* Define to 1 if you have a functional curl library. */
+ #undef HAVE_LIBCURL
+ 
+-/* Define to 1 if you have the `pcre2' library (-lpcre). */
++/* Define to 1 if you have the `pcre2' library (-lpcre2). */
+ #undef HAVE_LIBPCRE
+ 
+ /* Define to 1 if you have the `ssl' library (-lssl). */
+diff --git a/configure b/configure
+index 3bfd765..26fb639 100755
+--- a/configure
++++ b/configure
+@@ -14130,13 +14130,13 @@ _ACEOF
+ 
+ 
+ # Checks for libpcre2
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre2_compile in -lpcre" >&5
+-$as_echo_n "checking for pcre2_compile in -lpcre... " >&6; }
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre2_compile in -lpcre2" >&5
++$as_echo_n "checking for pcre2_compile in -lpcre2... " >&6; }
+ if ${ac_cv_lib_pcre_pcre_compile+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lpcre  $LIBS"
++LIBS="-lpcre2  $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -14171,7 +14171,7 @@ if test "x$ac_cv_lib_pcre_pcre_compile" = xyes; then :
+ #define HAVE_LIBPCRE 1
+ _ACEOF
+ 
+-  LIBS="-lpcre $LIBS"
++  LIBS="-lpcre2 $LIBS"
+ 
+ else
+   as_fn_error $? "libpcre2 required" "$LINENO" 5
+diff --git a/configure.ac b/configure.ac
+index f994f3b..de0d5e8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -138,7 +138,7 @@ AC_CHECK_HEADERS([openssl/crypto.h openssl/x509.h openssl/pem.h openssl/ssl.h op
+ LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl development files required])])
+ 
+ # Checks for libpcre2
+-AC_CHECK_LIB([pcre2], [pcre2_compile], [], [AC_MSG_ERROR([libpcre2 required])])
++AC_CHECK_LIB([pcre2-8], [pcre2_compile_8], [], [AC_MSG_ERROR([libpcre2 required])])
+ 
+ # Checks for header files.
+ AC_CHECK_HEADERS([netdb.h stddef.h sys/socket.h unistd.h])
+diff --git a/src/mod_auth_cas.c b/src/mod_auth_cas.c
+index bbec877..a3d7c3c 100644
+--- a/src/mod_auth_cas.c
++++ b/src/mod_auth_cas.c
+@@ -44,6 +44,7 @@
+ #include "util_md5.h"
+ #include "ap_config.h"
+ #include "ap_release.h"
++#define  PCRE2_CODE_UNIT_WIDTH 8
+ #include "pcre2.h"
+ #include "apr_buckets.h"
+ #include "apr_file_info.h"
+@@ -2380,32 +2381,35 @@ int cas_match_attribute(const char *const attr_spec, const cas_saml_attr *const
+ 		 * name and the attr_spec is a tilde (denotes a PCRE match). */
+ 		else if (!(*attr_c) && (*spec_c) == '~') {
+ 			const cas_saml_attr_val *val;
+-			const char *errorptr;
+-			int erroffset;
++			int errorptr;
++			PCRE2_SIZE erroffset;
+ 			pcre2_code *preg;
++			uint32_t options = PCRE2_UTF;
+ 
+ 			/* Skip the tilde */
+ 			spec_c++;
+ 
+ 			/* Set up the regex */
+-			preg = pcre2_compile(spec_c, 0, &errorptr, &erroffset, NULL);
++			preg = pcre2_compile((PCRE2_SPTR)spec_c, PCRE2_ZERO_TERMINATED, options, &errorptr, &erroffset, NULL);
+ 			if (NULL == preg) {
+ 				ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, "Pattern [%s] is not a valid regular expression", spec_c);
+ 				continue;
+ 			}
+-
++			
+ 			/* Compare the attribute values */
++			pcre2_match_data *preg_match;
++			preg_match = pcre2_match_data_create_from_pattern(preg, NULL);
+ 			val = attr->values;
+ 			for ( ; val; val = val->next) {
+ 				/* PCRE-compare the attribute value. At this point, spec_c
+ 				 * points to the NULL-terminated value pattern. */
+-				if (0 == pcre2_match(preg, NULL, val->value, (int)strlen(val->value), 0, 0, NULL, 0)) {
+-					pcre2_match_data_free(preg);
++				if (0 == pcre2_match(preg, (PCRE2_SPTR)val->value, (int)strlen(val->value), 0, 0, preg_match, 0)) {
++					pcre2_match_data_free(preg_match);
+ 					return CAS_ATTR_MATCH;
+ 				}
+ 			}
+ 
+-			pcre2_match_data__free(preg);
++			pcre2_match_data_free(preg_match);
+ 		}
+ 	}
+ 	return CAS_ATTR_NO_MATCH;
+-- 
+2.39.2
+
+
+From 6d1b7f5e100877bcd691f6e6c89d224a9270d239 Mon Sep 17 00:00:00 2001
+From: "Scott A. Williams" <vwfoxguru@gmail.com>
+Date: Fri, 3 Mar 2023 20:31:11 -0800
+Subject: [PATCH 3/3] Fix mixed declarations warning.
+
+Signed-off-by: Scott A. Williams <vwfoxguru@gmail.com>
+---
+ src/mod_auth_cas.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mod_auth_cas.c b/src/mod_auth_cas.c
+index a3d7c3c..9775a2b 100644
+--- a/src/mod_auth_cas.c
++++ b/src/mod_auth_cas.c
+@@ -2385,6 +2385,7 @@ int cas_match_attribute(const char *const attr_spec, const cas_saml_attr *const
+ 			PCRE2_SIZE erroffset;
+ 			pcre2_code *preg;
+ 			uint32_t options = PCRE2_UTF;
++                        pcre2_match_data *preg_match;
+ 
+ 			/* Skip the tilde */
+ 			spec_c++;
+@@ -2397,7 +2398,6 @@ int cas_match_attribute(const char *const attr_spec, const cas_saml_attr *const
+ 			}
+ 			
+ 			/* Compare the attribute values */
+-			pcre2_match_data *preg_match;
+ 			preg_match = pcre2_match_data_create_from_pattern(preg, NULL);
+ 			val = attr->values;
+ 			for ( ; val; val = val->next) {
+-- 
+2.39.2
+

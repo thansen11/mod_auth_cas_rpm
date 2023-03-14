@@ -1,0 +1,26 @@
+From f794993d7bc1d5518fc1485cf92863b6b82b3155 Mon Sep 17 00:00:00 2001
+From: "Scott A. Williams" <vwfoxguru@gmail.com>
+Date: Tue, 7 Mar 2023 16:12:54 -0800
+Subject: [PATCH] Patch obsolete autotools m4 macro.
+
+Signed-off-by: Scott A. Williams <vwfoxguru@gmail.com>
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index cd53219..cebee4d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -32,7 +32,7 @@ AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter],[CFLAGS="${CFLAGS} -Wno-unused-par
+ AX_CHECK_COMPILE_FLAG([-Wpointer-arith],[CFLAGS="${CFLAGS} -Wpointer-arith"])
+ AX_CHECK_COMPILE_FLAG([-Wstrict-prototypes],[CFLAGS="${CFLAGS} -Wstrict-prototypes"])
+ 
+-AC_PROG_LIBTOOL
++LT_INIT
+ AC_SUBST(INCLTDL)
+ AC_SUBST(LIBLTDL)
+ 
+-- 
+2.39.2
+
