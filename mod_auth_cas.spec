@@ -9,7 +9,7 @@ Source0:        https://github.com/apereo/%{name}/archive/v%{version}/%{name}-v%
 Source1:        auth_cas_mod.conf
 Source2:        auth_cas_httpd.conf
 # https://github.com/apereo/mod_auth_cas/pull/210
-Patch0:			0001-Patch-obsolete-autotools-m4-macro.patch
+Patch0:         0001-Patch-obsolete-autotools-m4-macro.patch
 # https://github.com/apereo/mod_auth_cas/pull/209
 Patch1:         0002-Update-to-pcre2.patch
 
@@ -31,7 +31,7 @@ with an authentication server that conforms to the CAS version 1 or 2
 protocol or SAML protocol as used by the JASIG/Apereo CAS Server
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 autoreconf -vif #BZ926155 - support aarch64
