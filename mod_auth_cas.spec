@@ -1,6 +1,6 @@
 Name:           mod_auth_cas
 Version:        1.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Apache CAS Authentication Module for the JASIG/Apereo CAS Server
 
 License:        Apache-2.0
@@ -9,7 +9,7 @@ Source0:        https://github.com/apereo/%{name}/archive/v%{version}/%{name}-v%
 Source1:        auth_cas_mod.conf
 Source2:        auth_cas_httpd.conf
 # https://github.com/apereo/mod_auth_cas/pull/210
-Patch0:			0001-Patch-obsolete-autotools-m4-macro.patch
+Patch0:         0001-Patch-obsolete-autotools-m4-macro.patch
 # https://github.com/apereo/mod_auth_cas/pull/209
 Patch1:         0002-Update-to-pcre2.patch
 
@@ -19,7 +19,7 @@ BuildRequires:  m4, readline-devel, autoconf, automake
 BuildRequires:  libcurl-devel
 BuildRequires:  libtool
 # Created issue with upstream https://github.com/apereo/mod_auth_cas/issues/208
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  gcc
 
 Requires:       httpd-mmn = %{_httpd_mmn}
@@ -31,7 +31,7 @@ with an authentication server that conforms to the CAS version 1 or 2
 protocol or SAML protocol as used by the JASIG/Apereo CAS Server
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 autoreconf -vif #BZ926155 - support aarch64
@@ -54,6 +54,11 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/httpd/%{name}
 %dir %attr(-,apache,apache) %{_localstatedir}/cache/httpd/%{name}
 
 %changelog
+* Tue Mar 14 2023 Scott Williams <vwbusguy@fedoraproject.org> - 1.2-4
+- Patch whitespace in spec file
+- Fix syntax for applying patches during rpm build
+- Bump BuildRequires to use pcre2-devel
+
 * Tue Mar 14 2023 Tim Hansen <timhansen46@fedoraproject.org> - 1.2-3
 - Add patches for pending upstream pull requests.
 
