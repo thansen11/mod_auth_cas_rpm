@@ -19,7 +19,7 @@ BuildRequires:  m4, readline-devel, autoconf, automake
 BuildRequires:  libcurl-devel
 BuildRequires:  libtool
 # Created issue with upstream https://github.com/apereo/mod_auth_cas/issues/208
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  gcc
 
 Requires:       httpd-mmn = %{_httpd_mmn}
@@ -57,6 +57,7 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/httpd/%{name}
 * Tue Mar 14 2023 Scott Williams <vwbusguy@fedoraproject.org> - 1.2-4
 - Patch whitespace in spec file
 - Fix syntax for applying patches during rpm build
+- Bump BuildRequires to use pcre2-devel
 
 * Tue Mar 14 2023 Tim Hansen <timhansen46@fedoraproject.org> - 1.2-3
 - Add patches for pending upstream pull requests.
